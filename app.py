@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)  # Enable Cross-Origin Resource Sharing
 
 # Load the trained model
-model = pickle.load(open("model.pkl", "rb"))
+model = pickle.load(open("heart_disease_model.pkl", "rb"))
 
 @app.route("/")
 def home():
