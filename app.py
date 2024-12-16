@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import pickle
+import joblib
 import numpy as np
 
 app = Flask(__name__)
-CORS(app)  # Enable Cross-Origin Resource Sharing
+CORS(app)
 
-# Load the trained model
-model = pickle.load(open("heart_disease_model.pkl", "rb"))
+# Load the model and feature names
+model = joblib.load("heart_disease_model.pkl")
+feature_names = joblib.load("feature_names.pkl")  # Load saved feature names
 
 @app.route("/")
 def home():
@@ -18,9 +19,10 @@ def predict():
     try:
         # Parse incoming JSON data
         data = request.get_json()
-        features = np.array([list(data.values())])
-        
-        # Predict using the loaded model
+        # Ensure input order matches feature names
+        features = np.array([[data[name] for name in feature_names]])
+
+        # Predict using the model
         prediction = model.predict(features)
         result = "Heart Disease Detected" if prediction[0] == 1 else "No Heart Disease"
         
