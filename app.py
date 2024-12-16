@@ -1,56 +1,54 @@
-# app.py
-from flask import Flask, request, jsonify
-import joblib
+from flask import Flask, send_from_directory, jsonify, request
 import numpy as np
+import pickle
 
-# Initialize Flask app
-from flask_cors import CORS
-
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+app = Flask(__name__, static_folder="frontend")  # Set the 'frontend' folder as static folder
 
 # Load the trained model
-model = joblib.load('heart_disease_model.pkl')
+model = pickle.load(open('model.pkl', 'rb'))  # Make sure to replace this path with your model path
 
-# Define the API route
 @app.route('/')
 def home():
-    return "Heart Disease Prediction API is running!"
+    # Serve the index.html file from the 'frontend' folder
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Get input data from user
-        data = request.json  # Expecting JSON input
+        # Extract input data from the POST request
+        data = request.get_json()
 
-        # Extract features (make sure these match your training data)
-        features = np.array([[
-            data['age'], 
-            data['sex'], 
-            data['cp'], 
-            data['trestbps'], 
-            data['chol'], 
+        # Extract patient parameters from the request
+        parameters = [
+            data['age'],
+            data['sex'],
+            data['cp'],
+            data['trestbps'],
+            data['chol'],
+            data['fbs'],
+            data['restecg'],
             data['thalach'],
-            data['fbs'], 
-            data['restecg'], 
-            data['exang'], 
-            data['oldpeak'], 
-            data['slope'], 
-            data['ca'], 
+            data['exang'],
+            data['oldpeak'],
+            data['slope'],
+            data['ca'],
             data['thal']
-        ]])
+        ]
 
-        # Make prediction
+        # Convert the parameters to a numpy array and reshape it for prediction
+        features = np.array(parameters).reshape(1, -1)
+
+        # Predict using the loaded model
         prediction = model.predict(features)
-        result = "Heart Disease Detected" if prediction[0] == 1 else "No Heart Disease"
 
-        # Return prediction result
-        return jsonify({"prediction": result})
+        # Send the result back to the frontend
+        if prediction == 1:
+            return jsonify({"prediction": "Heart Disease Detected"})
+        else:
+            return jsonify({"prediction": "No Heart Disease Detected"})
 
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return jsonify({"error": f"Error predicting the result: {str(e)}"}), 400
 
-# Run the Flask app
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
-
