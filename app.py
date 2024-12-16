@@ -5,7 +5,7 @@ import pickle
 app = Flask(__name__, static_folder="frontend")  # Set the 'frontend' folder as static folder
 
 # Load the trained model
-model = pickle.load(open('model.pkl', 'rb'))  # Make sure to replace this path with your model path
+model = pickle.load(open('heart_disease_model.pkl', 'rb'))  # Make sure to replace this path with your model path
 
 @app.route('/')
 def home():
