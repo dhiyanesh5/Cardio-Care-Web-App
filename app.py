@@ -1,9 +1,13 @@
 from flask import Flask, send_from_directory, jsonify, request
 import numpy as np
 import pickle
+from flask_cors import CORS
+
+
+
 
 app = Flask(__name__, static_folder="frontend")  # Set the 'frontend' folder as static folder
-
+CORS(app)
 # Load the trained model
 model = pickle.load(open('heart_disease_model.pkl', 'rb'))  # Make sure to replace this path with your model path//
 
