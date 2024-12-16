@@ -1,58 +1,32 @@
-from flask import Flask, send_from_directory, jsonify, request
-import numpy as np
-import pickle
+from flask import Flask, request, jsonify
 from flask_cors import CORS
+import pickle
+import numpy as np
 
+app = Flask(__name__)
+CORS(app)  # Enable Cross-Origin Resource Sharing
 
-
-
-app = Flask(__name__, static_folder="frontend")  # Set the 'frontend' folder as static folder
-CORS(app)
 # Load the trained model
-model = pickle.load(open('heart_disease_model.pkl', 'rb'))  # Make sure to replace this path with your model path//
+model = pickle.load(open("model.pkl", "rb"))
 
-@app.route('/')
+@app.route("/")
 def home():
-    # Serve the index.html file from the 'frontend' folder
-    return send_from_directory(app.static_folder, 'index.html')
+    return "Heart Disease Prediction API is running!"
 
-@app.route('/predict', methods=['POST'])
+@app.route("/predict", methods=["POST"])
 def predict():
     try:
-        # Extract input data from the POST request
+        # Parse incoming JSON data
         data = request.get_json()
-
-        # Extract patient parameters from the request
-        parameters = [
-            data['age'],
-            data['sex'],
-            data['cp'],
-            data['trestbps'],
-            data['chol'],
-            data['fbs'],
-            data['restecg'],
-            data['thalach'],
-            data['exang'],
-            data['oldpeak'],
-            data['slope'],
-            data['ca'],
-            data['thal']
-        ]
-
-        # Convert the parameters to a numpy array and reshape it for prediction
-        features = np.array(parameters).reshape(1, -1)
-
+        features = np.array([list(data.values())])
+        
         # Predict using the loaded model
         prediction = model.predict(features)
-
-        # Send the result back to the frontend
-        if prediction == 1:
-            return jsonify({"prediction": "Heart Disease Detected"})
-        else:
-            return jsonify({"prediction": "No Heart Disease Detected"})
-
+        result = "Heart Disease Detected" if prediction[0] == 1 else "No Heart Disease"
+        
+        return jsonify({"prediction": result})
     except Exception as e:
-        return jsonify({"error": f"Error predicting the result: {str(e)}"}), 400
+        return jsonify({"error": str(e)}), 400
 
 if __name__ == "__main__":
     app.run(debug=True)
