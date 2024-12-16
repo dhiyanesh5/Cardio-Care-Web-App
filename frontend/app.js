@@ -18,29 +18,20 @@ document.getElementById('predictionForm').addEventListener('submit', function (e
         thal: parseInt(document.getElementById('thal').value)
     };
 
-    // Make sure to replace the below URL with your actual backend API URL
-    const apiUrl = 'https://your-backend-link.com/predict'; // Replace with actual URL
-
-    async function predictHeartDisease(data) {
-    try {
-        const response = await fetch(apiUrl, {
+    // Send the data to the Flask API
+    fetch('https://cardiocare-1j5t.onrender.com/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data),
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-        displayPrediction(result); // Handle result and display it
-        } else {
-        throw new Error(result.error || 'Prediction failed');
-        }
-    } catch (error) {
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('result').textContent = data.prediction;
+    })
+    .catch(error => {
         console.error('Error:', error);
-        alert('Error predicting the result');
-    }
-    }
-
+        document.getElementById('result').textContent = 'Error predicting the result.';
+    });
 });
