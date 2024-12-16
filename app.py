@@ -6,9 +6,8 @@ import numpy as np
 app = Flask(__name__)
 CORS(app)
 
-# Load the model and feature names
 model = joblib.load("heart_disease_model.pkl")
-feature_names = joblib.load("feature_names.pkl")  # Load saved feature names
+feature_names = joblib.load("feature_names.pkl")  
 
 @app.route("/")
 def home():
@@ -17,12 +16,10 @@ def home():
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
-        # Parse incoming JSON data
         data = request.get_json()
-        # Ensure input order matches feature names
+
         features = np.array([[data[name] for name in feature_names]])
 
-        # Predict using the model
         prediction = model.predict(features)
         result = "Heart Disease Detected" if prediction[0] == 1 else "No Heart Disease"
         
