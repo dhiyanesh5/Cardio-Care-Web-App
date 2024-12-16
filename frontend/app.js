@@ -2,7 +2,7 @@ const form = document.getElementById("predictionForm");
 const resultDisplay = document.getElementById("result");
 
 form.addEventListener("submit", async function (e) {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault(); // default form submission
 
     // Collect form data
     const data = {
@@ -22,7 +22,7 @@ form.addEventListener("submit", async function (e) {
     };
 
     try {
-        // Make the POST request to the backend API
+        // POST request to the backend API
         const response = await fetch("https://cardiocare-1j5t.onrender.com/predict", {
             method: "POST",
             headers: {
@@ -33,7 +33,7 @@ form.addEventListener("submit", async function (e) {
 
         const result = await response.json();
 
-        // Display the prediction result or error
+        // Displayprediction result/error
         if (result.error) {
             resultDisplay.textContent = `Error: ${result.error}`;
             resultDisplay.style.color = "red";
@@ -42,7 +42,7 @@ form.addEventListener("submit", async function (e) {
             resultDisplay.style.color = "green";
         }
     } catch (error) {
-        // Handle any fetch errors
+        
         resultDisplay.textContent = "An error occurred while connecting to the server.";
         resultDisplay.style.color = "red";
         console.error("Error:", error);
