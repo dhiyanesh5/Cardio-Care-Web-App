@@ -52,6 +52,7 @@ CardioCareML is a machine learning-based web application designed to predict the
 
 ## **Contributors**
 - **Dhiyanesh**: Developer
+- **Mithuna**: Developer
 
 ## **License**
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
